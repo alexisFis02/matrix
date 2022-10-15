@@ -16,6 +16,7 @@
 				<Compiler>
 					<Add option="-Wall" />
 					<Add option="-g" />
+					<Add directory="include" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -28,15 +29,16 @@
 				<Compiler>
 					<Add option="-Wall" />
 					<Add option="-O2" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 				</Linker>
 			</Target>
 		</Build>
-		<Unit filename="main.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="include/Matrix.h" />
+		<Unit filename="include/matExp.h" />
+		<Unit filename="src/Matrix.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

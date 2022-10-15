@@ -13,7 +13,7 @@ Matrix::Matrix()
 Matrix::Matrix(int rows,int columns)
 {
     if(rows<=0 || columns <=0)
-        throw matExp("Error de redimencion");
+        throw matExp("Filas o columnas negativas o nulas");
 
     int i;
     pm = new int*[rows];
@@ -103,7 +103,7 @@ Matrix Matrix::operator+(const Matrix& other)
     int i,j;
 
     if((rows != other.rows) || (columns != other.columns))
-        throw matExp("Las matrices deben ser de la misma dimencion");
+        throw matExp("Las matrices deben ser de la misma dimension");
 
     Matrix result(rows,columns);
 
@@ -119,7 +119,7 @@ Matrix Matrix::operator-(const Matrix& other)
     int i,j;
 
     if((rows != other.rows) || (columns != other.columns))
-        throw matExp("Las matrices deben ser de la misma dimencion");
+        throw matExp("Las matrices deben ser de la misma dimension");
 
     Matrix result(rows,columns);
 
@@ -151,7 +151,7 @@ Matrix& Matrix::operator+=(const Matrix& other)
     int i,j;
 
     if((rows != other.rows) || (columns != other.columns))
-        throw matExp("Las matrices deben ser de la misma dimencion");
+        throw matExp("Las matrices deben ser de la misma dimension");
 
     for(i=0; i<rows; i++)
         for(j=0; j<columns; j++)
@@ -164,7 +164,7 @@ Matrix& Matrix::operator-=(const Matrix& other)
     int i,j;
 
     if((rows != other.rows) || (columns != other.columns))
-        throw matExp("Error de dimencion");
+        throw matExp("Error de dimension");
 
     for(i=0; i<rows; i++)
         for(j=0; j<columns; j++)
@@ -178,7 +178,7 @@ Matrix  Matrix::operator*(const Matrix& other)
     int i,j,k,sum=0;
 
     if(columns != other.rows)
-        throw matExp("Error de dimencion");
+        throw matExp("Error de dimension");
 
     Matrix result(rows,other.columns);
 
