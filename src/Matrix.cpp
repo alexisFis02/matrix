@@ -1,17 +1,20 @@
 #include "Matrix.h"
 
-#define TAM_BUFFER 50
+#define SIZEBUFFER 80
 #include <math.h>
 Matrix::Matrix()
 {
-    pm = new int*;
-    pm[0] = new int;
+    pm       = new int*;
+    pm[0]    = new int;
     pm[0][0] = 0;
     rows = columns = 1;
 }
 
 Matrix::Matrix(int rows,int columns)
 {
+    if(rows<=0 || columns <=0)
+        throw matExp("Error de redimencion");
+
     int i;
     pm = new int*[rows];
 
@@ -19,41 +22,40 @@ Matrix::Matrix(int rows,int columns)
         pm[i] = new int[columns];
     this->rows = rows;
     this->columns = columns;
-
-    inicializar(0);
+    init(0);
 }
 
-void Matrix::inicializar(int valor)
+void Matrix::init(int value)
 {
     int i,j;
     for(i=0; i<rows; i++)
         for(j=0; j<columns; j++)
-            pm[i][j] = valor;
+            pm[i][j] = value;
 }
 
-void Matrix::redimencionar(int rows,int columns)
+void Matrix::reSize(int rows,int columns)
 {
     int i,j;
-    if((this->rows ==  rows) && (this->columns == columns))
+
+    if((this->rows == rows) && (this->columns == columns))
         return;
 
-    Matrix nuevaMatriz(rows,columns);
-
+    Matrix newMatrix(rows,columns);
 
     for(i=0; i<this->rows && i<rows ; i++)
         for(j=0; j<this->columns && j<columns ; j++)
-            nuevaMatriz.pm[i][j] = this->pm[i][j];
+            newMatrix.pm[i][j] = this->pm[i][j];
 
     for(i=0; i<this->rows; i++)
         delete [] this->pm[i];
     delete [] this->pm;
 
-    this->pm   = nuevaMatriz.pm;
+    this->pm      = newMatrix.pm;
     this->rows    = rows;
     this->columns = columns;
 }
 
-int Matrix::determinante()
+int Matrix::determinant()
 {
     int det = 0;
     if(rows!=columns)
@@ -71,20 +73,21 @@ int Matrix::determinante()
 /**
 fila y columna son evitadas para la asignacion de la subMatriz
 **/
-int Matrix::cofactor(int fila, int columna)
+int Matrix::cofactor(int row,int column)
 {
     int n=this->rows -1,
         x=0,
         y=0;
-    Matrix submatriz(this->rows-1,this->columns-1);
+
+    Matrix subMatrix(this->rows-1,this->columns-1);
 
     for(int i=0;i<this->rows; i++)
         for(int j=0;j<this->rows;j++){
 
-            if(i==fila || j==columna)
+            if(i==row || j==column)
                 continue;
 
-            submatriz.pm[x][y] = pm[i][j];
+            subMatrix.pm[x][y] = pm[i][j];
 
             if (++y >= n){
                 x++;
@@ -92,7 +95,7 @@ int Matrix::cofactor(int fila, int columna)
             }
         }
 
-    return submatriz.determinante();
+    return subMatrix.determinant();
 }
 /// OPERATORS
 Matrix Matrix::operator+(const Matrix& other)
@@ -102,13 +105,13 @@ Matrix Matrix::operator+(const Matrix& other)
     if((rows != other.rows) || (columns != other.columns))
         throw matExp("Las matrices deben ser de la misma dimencion");
 
-    Matrix matrizResultado(rows,columns);
+    Matrix result(rows,columns);
 
     for(i=0; i<rows; i++)
         for(j=0; j<columns; j++)
-            matrizResultado.pm[i][j] = pm[i][j] + other.pm[i][j];
+            result.pm[i][j] = pm[i][j] + other.pm[i][j];
 
-    return matrizResultado;
+    return result;
 }
 
 Matrix Matrix::operator-(const Matrix& other)
@@ -118,13 +121,13 @@ Matrix Matrix::operator-(const Matrix& other)
     if((rows != other.rows) || (columns != other.columns))
         throw matExp("Las matrices deben ser de la misma dimencion");
 
-    Matrix matrizResultado(rows,columns);
+    Matrix result(rows,columns);
 
     for(i=0; i<rows; i++)
         for(j=0; j<columns; j++)
-            matrizResultado.pm[i][j] = pm[i][j] - other.pm[i][j];
+            result.pm[i][j] = pm[i][j] - other.pm[i][j];
 
-    return matrizResultado;
+    return result;
 }
 
 Matrix& Matrix::operator=(const Matrix& other)
@@ -136,7 +139,7 @@ Matrix& Matrix::operator=(const Matrix& other)
 
     delete [] pm;
 
-    pm   = other.pm;
+    pm      = other.pm;
     rows    = other.rows;
     columns = other.columns;
 
@@ -177,18 +180,18 @@ Matrix  Matrix::operator*(const Matrix& other)
     if(columns != other.rows)
         throw matExp("Error de dimencion");
 
-    Matrix matrizResultado(rows,other.columns);
+    Matrix result(rows,other.columns);
 
     for(i=0; i<rows; i++)
         for(k=0; k<other.columns; k++){
             for(j=0; j<rows; j++){
                 sum += (pm[i][j]) * (other.pm[j][k]);
             }
-            matrizResultado.pm[i][k] = sum;
+            result.pm[i][k] = sum;
             sum = 0;
         }
 
-    return matrizResultado;
+    return result;
 }
 
 
@@ -197,19 +200,20 @@ ostream& operator<<(ostream& os, const Matrix& mat)
     int i,j;
     os << endl << endl;
     for(i=0; i<mat.rows; i++){
+
         os<< " ";
         for(j=0; j<mat.columns; j++)
             os << mat.pm[i][j] << " ";
-
         os << endl;
+
     }
     return os;
 }
 
 istream& operator>>(istream& is, Matrix& mat)
 {
-    int i,j,k=0,valor;
-    char buffer[TAM_BUFFER];
+    int i,j,k=0,value;
+    char buffer[SIZEBUFFER];
 
     for(i=0; i<mat.rows; i++)
         for(j=0; j<mat.columns; j++){
@@ -219,13 +223,13 @@ istream& operator>>(istream& is, Matrix& mat)
             while(buffer[k] != ' '){
                 k++;
                 if((buffer[k] = is.get()) == '\n'){
-                    valor = stoi(buffer);
-                    mat.pm[i][j] = valor;
+                    value = stoi(buffer);
+                    mat.pm[i][j] = value;
                     return is;
                 }
             }
-            valor = stoi(buffer);
-            mat.pm[i][j] = valor;
+            value = stoi(buffer);
+            mat.pm[i][j] = value;
             k=0;
         }
     return is;

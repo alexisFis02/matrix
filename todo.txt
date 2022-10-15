@@ -1,0 +1,2 @@
+(Matrix::reSize).verificar que los parametros sean positivos.
+    (operator<<).ajustar la salida por consola.

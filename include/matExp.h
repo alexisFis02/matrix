@@ -11,12 +11,9 @@ public:
     const string getMensaje() const;
 private:
     string mensaje;
-
 };
-
 inline matExp::matExp(const string mensaje):mensaje(mensaje){}
-
-inline const string matExp::getMensaje()const {return this->mensaje;}
+inline const string matExp::getMensaje()const{return this->mensaje;}
 
 
 #endif // MATEXP_H
